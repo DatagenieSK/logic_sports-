@@ -195,7 +195,7 @@ function getProductTotalStock(p) {
 }
 
 function getSizeStock(p, size) {
-  if (p.sizeStock && p.sizeStock[size] !== undefined) return Number(p.sizeStock[size]);
+  if (p && p.sizeStock && p.sizeStock[size] !== undefined) return Number(p.sizeStock[size]);
   return 10;
 }
 
@@ -251,6 +251,106 @@ function showToast(msg) {
   setTimeout(() => el.remove(), 3200);
 }
 
+/* ==================== UNIFIED DRAWER & MODAL CONTROLLER ==================== */
+function closeAllDrawers() {
+  document.getElementById('mobileNavDrawer')?.classList.remove('open');
+  document.getElementById('mobileNavOverlay')?.classList.add('hidden');
+  document.getElementById('cartDrawer')?.classList.remove('open');
+  document.getElementById('cartOverlay')?.classList.add('hidden');
+  document.getElementById('wishlistDrawer')?.classList.remove('open');
+  document.getElementById('wishlistOverlay')?.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function toggleMobileNav(open) {
+  if (open) closeAllDrawers();
+  document.getElementById('mobileNavDrawer')?.classList.toggle('open', open);
+  document.getElementById('mobileNavOverlay')?.classList.toggle('hidden', !open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+function toggleCartDrawer(open) {
+  if (open) closeAllDrawers();
+  document.getElementById('cartDrawer')?.classList.toggle('open', open);
+  document.getElementById('cartOverlay')?.classList.toggle('hidden', !open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+function toggleWishlistDrawer(open) {
+  if (open) closeAllDrawers();
+  document.getElementById('wishlistDrawer')?.classList.toggle('open', open);
+  document.getElementById('wishlistOverlay')?.classList.toggle('hidden', !open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+// Close drawers or modals on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeAllDrawers();
+    closeCheckoutModal();
+    closeExchangeModal();
+    toggleSizeModal(false);
+    togglePolicyModal(false);
+  }
+});
+
+/* ==================== VELOCITY TELEMETRY LOADER ==================== */
+function runVelocityLoader(durationMs = 1100, customStatus = null, onComplete = null) {
+  const loader = document.getElementById('logicLoader');
+  if (!loader) {
+    if (onComplete) onComplete();
+    return;
+  }
+
+  const pctEl = document.getElementById('loaderPct');
+  const fillEl = document.getElementById('loaderBarFill');
+  const speedEl = document.getElementById('loaderSpeed');
+  const cadenceEl = document.getElementById('loaderCadence');
+  const statusEl = document.getElementById('loaderStatusText');
+
+  const statusPhases = customStatus
+    ? [customStatus]
+    : [
+        'CALIBRATING 4-WAY RIPSTOP WEAVE...',
+        'PRESSURIZING NITRO CARBON PLATE...',
+        'SYNCING LIVE SIZE MATRIX...',
+        'READY FOR SPRINT.'
+      ];
+
+  loader.classList.remove('loader-hidden', 'loader-exit');
+  const start = performance.now();
+
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(1, elapsed / durationMs);
+    const pct = Math.floor(progress * 100);
+
+    if (pctEl) pctEl.textContent = `${pct}%`;
+    if (fillEl) fillEl.style.width = `${pct}%`;
+    if (speedEl) speedEl.textContent = `${(progress * 34.8).toFixed(1)} KM/H`;
+    if (cadenceEl) cadenceEl.textContent = `${Math.floor(170 + progress * 42)} SPM`;
+
+    if (statusEl && statusPhases.length > 1) {
+      const phaseIdx = Math.min(statusPhases.length - 1, Math.floor(progress * statusPhases.length));
+      statusEl.textContent = statusPhases[phaseIdx];
+    } else if (statusEl && customStatus) {
+      statusEl.textContent = customStatus;
+    }
+
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      if (onComplete) onComplete();
+      loader.classList.add('loader-exit');
+      setTimeout(() => {
+        loader.classList.add('loader-hidden');
+      }, 650);
+    }
+  }
+
+  requestAnimationFrame(tick);
+}
+
 /* ==================== BOOTSTRAP ==================== */
 document.addEventListener('DOMContentLoaded', () => {
   const pageType = document.body.getAttribute('data-page');
@@ -259,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
     updateWishlistUI();
     updateCustomerHeaderState();
+    runVelocityLoader(1150);
   } else if (pageType === 'admin') {
     initAdminConsole();
   }
@@ -267,19 +368,28 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ============================================================================
    PART 1: CUSTOMER STOREFRONT, WISHLIST, PDP & BUNDLES
    ============================================================================ */
+function setActiveNavHighlight(navKey) {
+  document.querySelectorAll('.nav-link, .mobile-nav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-nav') === navKey);
+  });
+}
+
 function navigateTo(viewName) {
+  closeAllDrawers();
   document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
   document.getElementById(`view-${viewName}`)?.classList.add('active');
-  if (viewName === 'auth') renderCustomerAuthView();
+  if (viewName === 'team') setActiveNavHighlight('team');
+  if (viewName === 'auth') {
+    setActiveNavHighlight('');
+    renderCustomerAuthView();
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function filterByCategory(cat) {
   activeCategory = cat;
   navigateTo('home');
-  document.querySelectorAll('.nav-link').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-nav') === cat);
-  });
+  setActiveNavHighlight(cat);
   const titleEl = document.getElementById('catalogTitle');
   if (titleEl) titleEl.textContent = cat === 'ALL' ? 'ALL PERFORMANCE GEAR' : cat.toUpperCase();
   renderStoreCatalog();
@@ -287,13 +397,20 @@ function filterByCategory(cat) {
 
 function handleSearch(val) {
   searchQuery = val.trim().toLowerCase();
-  navigateTo('home');
+  const desktopInput = document.getElementById('searchInput');
+  const mobileInput = document.getElementById('mobileSearchInput');
+  if (desktopInput && desktopInput.value !== val) desktopInput.value = val;
+  if (mobileInput && mobileInput.value !== val) mobileInput.value = val;
+
+  document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('view-home')?.classList.add('active');
   renderStoreCatalog();
 }
 
 function scrollToSection(id) {
   navigateTo('home');
-  setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 80);
+  setActiveNavHighlight('fit');
+  setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 90);
 }
 
 function renderStoreCatalog() {
@@ -317,6 +434,11 @@ function renderStoreCatalog() {
   if (sortMode === 'price-asc') items.sort((a, b) => a.price - b.price);
   if (sortMode === 'price-desc') items.sort((a, b) => b.price - a.price);
   if (sortMode === 'rating') items.sort((a, b) => (b.rating || 4.8) - (a.rating || 4.8));
+
+  if (items.length === 0) {
+    grid.innerHTML = `<div class="auth-card" style="grid-column:1/-1;text-align:center;"><h3>No matching gear found</h3><p class="muted-text">Try clearing your search filter or switching categories.</p></div>`;
+    return;
+  }
 
   grid.innerHTML = items.map(p => {
     const primaryVariant = p.variants[0] || { colorName: 'Standard', colorHex: '#F3C13A', image: '' };
@@ -382,11 +504,6 @@ function toggleWishlistItem(productId) {
   renderStoreCatalog();
 }
 
-function toggleWishlistDrawer(open) {
-  document.getElementById('wishlistDrawer')?.classList.toggle('open', open);
-  document.getElementById('wishlistOverlay')?.classList.toggle('hidden', !open);
-}
-
 function updateWishlistUI() {
   const list = getWishlist();
   const countEl = document.getElementById('wishlistCount');
@@ -429,8 +546,10 @@ function openProductDetail(productId, variantIdx = 0) {
     selectedSize: firstInStockSize
   };
 
-  renderPdpView();
-  navigateTo('pdp');
+  runVelocityLoader(360, 'LOADING GEAR TELEMETRY...', () => {
+    renderPdpView();
+    navigateTo('pdp');
+  });
 }
 
 function renderPdpView() {
@@ -466,9 +585,9 @@ function renderPdpView() {
         <span class="eyebrow-tag">${product.category} • SKU: ${product.sku}</span>
         <h2>${product.name}</h2>
         <div class="pdp-price">
-          ₹${product.price.toLocaleString('en-IN')}
-          <del style="font-size:1.05rem;color:#64748B;margin-left:8px;">₹${product.mrp.toLocaleString('en-IN')}</del>
-          <span style="font-size:0.88rem;color:#16A34A;margin-left:8px;">(${discount}% OFF)</span>
+          <span>₹${product.price.toLocaleString('en-IN')}</span>
+          <del style="font-size:1.05rem;color:#64748B;">₹${product.mrp.toLocaleString('en-IN')}</del>
+          <span style="font-size:0.88rem;color:#16A34A;">(${discount}% OFF)</span>
         </div>
 
         <div class="model-spec-banner">🏃 ${product.modelSpec || 'Athletic Tapered Performance Cut | True to Size'}</div>
@@ -509,7 +628,7 @@ function renderPdpView() {
         </p>
 
         ${sizeQty > 0 ? `
-          <div style="display:flex;gap:0.75rem;">
+          <div style="display:flex;gap:0.65rem;">
             <button class="btn btn-primary btn-block" onclick="addPdpToCart()">
               ADD TO BAG — ₹${product.price.toLocaleString('en-IN')}
             </button>
@@ -522,7 +641,6 @@ function renderPdpView() {
           </div>
         `}
 
-        <!-- PIN CODE SERVICEABILITY CHECKER -->
         <div class="pin-checker-box">
           <strong style="font-family:var(--font-mono);font-size:0.76rem;">📍 CHECK DELIVERY & COD AVAILABILITY</strong>
           <div class="pin-row">
@@ -532,7 +650,6 @@ function renderPdpView() {
           <div id="pinCheckOutput" style="font-size:0.78rem;margin-top:0.4rem;font-family:var(--font-mono);"></div>
         </div>
 
-        <!-- COMPLETE THE KIT 15% BUNDLE BUILDER -->
         <div class="bundle-card">
           <div>
             <span class="eyebrow-tag" style="margin-bottom:0.25rem;">COMPLETE THE KIT (SAVE 15%)</span>
@@ -544,9 +661,8 @@ function renderPdpView() {
       </div>
     </div>
 
-    <!-- VERIFIED ATHLETE REVIEWS & FIT SLIDER -->
     <div class="pdp-reviews-section">
-      <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:2rem;align-items:start;">
+      <div class="pdp-reviews-grid">
         <div>
           <h3>ATHLETE FIT CONSENSUS</h3>
           <p class="muted-text">Based on ${reviews.length} verified Logic Sports buyers</p>
@@ -586,7 +702,7 @@ function renderPdpView() {
           <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.85rem;">
             ${reviews.map(r => `
               <div style="border:1px solid var(--border);padding:0.9rem;background:#F8FAFC;">
-                <div style="display:flex;justify-content:space-between;">
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.35rem;">
                   <strong>${r.author}</strong>
                   <span style="color:var(--gold);background:var(--navy);padding:0 6px;font-family:var(--font-mono);font-size:0.75rem;">★ ${r.rating}/5</span>
                 </div>
@@ -669,7 +785,10 @@ function addPdpToCart() {
   const existing = cart.find(item => item.cartKey === cartKey);
 
   if (existing) {
-    existing.qty = Math.min(avail, existing.qty + 1);
+    if (existing.qty >= avail) {
+      return showToast(`Maximum available stock (${avail}) for Size ${currentPdpState.selectedSize} reached.`);
+    }
+    existing.qty += 1;
   } else {
     cart.push({
       cartKey,
@@ -842,7 +961,7 @@ function renderCustomerAuthView() {
             <strong>${o.id}</strong> • <small>${o.date}</small>
             <span class="eyebrow-tag" style="margin-left:0.5rem;">AWB: LGC${o.id.slice(-5)}IN</span>
           </div>
-          <div>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
             <button class="btn btn-outline-dark btn-sm" onclick="printGstInvoice('${o.id}')">🖨️ GST INVOICE</button>
             <button class="btn btn-dark btn-sm" onclick="openExchangeModal('${o.id}')">⇄ SIZE EXCHANGE</button>
           </div>
@@ -857,7 +976,7 @@ function renderCustomerAuthView() {
         <div style="font-size:0.86rem;margin-top:0.5rem;">
           ${o.items.map(i => `${i.name} (${i.colorName}, Size: <strong>${i.size}</strong>) × ${i.qty}`).join(' | ')}
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:0.85rem;">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.4rem;margin-top:0.5rem;font-size:0.85rem;">
           <span>Total Paid: <strong>₹${o.total.toLocaleString('en-IN')}</strong> (${o.payment})</span>
           ${o.exchangeRequest ? `<span style="color:var(--danger);font-weight:700;">⇄ Exchange Requested: ${o.exchangeRequest}</span>` : ''}
         </div>
@@ -872,7 +991,7 @@ function openExchangeModal(orderId) {
 }
 
 function closeExchangeModal() {
-  document.getElementById('exchangeModal').classList.add('hidden');
+  document.getElementById('exchangeModal')?.classList.add('hidden');
 }
 
 function submitSizeExchange(e) {
@@ -923,11 +1042,6 @@ function printGstInvoice(orderId) {
 }
 
 /* ==================== CART & DYNAMIC COUPONS ==================== */
-function toggleCartDrawer(open) {
-  document.getElementById('cartDrawer')?.classList.toggle('open', open);
-  document.getElementById('cartOverlay')?.classList.toggle('hidden', !open);
-}
-
 function updateCartUI() {
   const cart = getCart();
   const countEl = document.getElementById('cartCount');
@@ -976,6 +1090,15 @@ function changeCartQty(cartKey, delta) {
   let cart = getCart();
   const item = cart.find(i => i.cartKey === cartKey);
   if (!item) return;
+
+  if (delta > 0) {
+    const prod = getProducts().find(p => p.id === item.productId);
+    const maxAvail = getSizeStock(prod, item.size);
+    if (item.qty >= maxAvail) {
+      return showToast(`Only ${maxAvail} units available in Size ${item.size}.`);
+    }
+  }
+
   item.qty += delta;
   if (item.qty <= 0) cart = cart.filter(i => i.cartKey !== cartKey);
   saveCart(cart);
@@ -997,7 +1120,7 @@ function applyPromoCode() {
 
 function openCheckoutModal() {
   if (getCart().length === 0) return showToast('Add items to your bag first!');
-  toggleCartDrawer(false);
+  closeAllDrawers();
   const user = getActiveCustomer();
   if (user) {
     document.getElementById('chkName').value = user.name || '';
@@ -1008,7 +1131,7 @@ function openCheckoutModal() {
 }
 
 function closeCheckoutModal() {
-  document.getElementById('checkoutModal').classList.add('hidden');
+  document.getElementById('checkoutModal')?.classList.add('hidden');
 }
 
 function submitCustomerOrder(e) {
@@ -1463,66 +1586,3 @@ function renderAdminDashboard() {
     `).join('')}
   `;
 }
-/* ============================================================================
-   LOGIC SPORTS - VELOCITY TELEMETRY LOADER ENGINE
-   ============================================================================ */
-function runVelocityLoader(durationMs = 1150, customStatus = null, onComplete = null) {
-  const loader = document.getElementById('logicLoader');
-  if (!loader) {
-    if (onComplete) onComplete();
-    return;
-  }
-
-  const pctEl = document.getElementById('loaderPct');
-  const fillEl = document.getElementById('loaderBarFill');
-  const speedEl = document.getElementById('loaderSpeed');
-  const cadenceEl = document.getElementById('loaderCadence');
-  const statusEl = document.getElementById('loaderStatusText');
-
-  const statusPhases = customStatus
-    ? [customStatus]
-    : [
-        'CALIBRATING 4-WAY RIPSTOP WEAVE...',
-        'PRESSURIZING NITRO CARBON PLATE...',
-        'SYNCING LIVE SIZE MATRIX...',
-        'READY FOR SPRINT.'
-      ];
-
-  loader.classList.remove('loader-hidden', 'loader-exit');
-  let start = performance.now();
-
-  function tick(now) {
-    const elapsed = now - start;
-    const progress = Math.min(1, elapsed / durationMs);
-    const pct = Math.floor(progress * 100);
-
-    if (pctEl) pctEl.textContent = `${pct}%`;
-    if (fillEl) fillEl.style.width = `${pct}%`;
-    if (speedEl) speedEl.textContent = `${(progress * 34.8).toFixed(1)} KM/H`;
-    if (cadenceEl) cadenceEl.textContent = `${Math.floor(170 + progress * 42)} SPM`;
-
-    if (statusEl && statusPhases.length > 1) {
-      const phaseIdx = Math.min(statusPhases.length - 1, Math.floor(progress * statusPhases.length));
-      statusEl.textContent = statusPhases[phaseIdx];
-    } else if (statusEl && customStatus) {
-      statusEl.textContent = customStatus;
-    }
-
-    if (progress < 1) {
-      requestAnimationFrame(tick);
-    } else {
-      if (onComplete) onComplete();
-      loader.classList.add('loader-exit');
-      setTimeout(() => {
-        loader.classList.add('loader-hidden');
-      }, 650);
-    }
-  }
-
-  requestAnimationFrame(tick);
-}
-
-// Automatically fire the loader when the storefront opens
-window.addEventListener('load', () => {
-  runVelocityLoader(1250);
-});

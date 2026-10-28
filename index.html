@@ -10,14 +10,13 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body data-page="store">
-    <!-- ==================== LOGIC SPORTS VELOCITY LOADER ==================== -->
+
+  <!-- ==================== LOGIC SPORTS VELOCITY LOADER ==================== -->
   <div id="logicLoader" class="logic-loader">
-    <!-- Top & Bottom Split Shutters -->
     <div class="loader-shutter shutter-top"></div>
     <div class="loader-shutter shutter-bottom"></div>
 
     <div class="loader-core">
-      <!-- Speed Streak Lines (Matching Logo Motion Lines) -->
       <div class="speed-streaks">
         <span></span>
         <span></span>
@@ -25,43 +24,29 @@
         <span></span>
       </div>
 
-      <!-- Custom Animated SVG Sprinter + Velocity Dart -->
       <div class="sprinter-stage">
         <svg class="sprinter-svg" viewBox="0 0 260 190" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Streaking Motion Lines Behind Runner -->
           <line class="svg-streak s-1" x1="15" y1="42" x2="95" y2="30" stroke="#F3C13A" stroke-width="5" stroke-linecap="round"/>
           <line class="svg-streak s-2" x1="5" y1="68" x2="72" y2="58" stroke="#F3C13A" stroke-width="4.5" stroke-linecap="round"/>
           <line class="svg-streak s-3" x1="18" y1="94" x2="65" y2="87" stroke="#F3C13A" stroke-width="4" stroke-linecap="round"/>
-
-          <!-- Paper-Plane Velocity Dart Ahead of Runner -->
           <polygon class="velocity-dart" points="195,28 242,18 210,48 206,36" fill="#F3C13A" />
-
-          <!-- Sprinter Silhouette / Kinetic Vector -->
           <g class="runner-body">
-            <!-- Head & Visor -->
             <circle cx="156" cy="36" r="13" fill="#F3C13A" />
             <path d="M154 33 L169 33" stroke="#0E1726" stroke-width="3.5" stroke-linecap="round"/>
-            <!-- Torso -->
             <path d="M146 50 L118 96 L142 104 L162 56 Z" fill="#F3C13A" />
-            <!-- Front Pumping Arm -->
             <path class="arm-front" d="M156 56 L182 74 L202 50" stroke="#F3C13A" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Back Drive Arm -->
             <path class="arm-back" d="M144 54 L112 62 L94 88" stroke="#F3C13A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Front Knee Drive Leg -->
             <path class="leg-front" d="M136 98 L168 122 L152 158" stroke="#F3C13A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- Back Extension Push-Off Leg -->
             <path class="leg-back" d="M124 96 L88 134 L52 172" stroke="#F3C13A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
           </g>
         </svg>
       </div>
 
-      <!-- Brand Typography Lockup -->
       <div class="loader-brand-lockup">
         <span class="loader-word-logic">LOGIC</span>
         <span class="loader-word-sports">SPORTS</span>
       </div>
 
-      <!-- Telemetry Progress Track & Live Counter -->
       <div class="loader-telemetry">
         <div class="telemetry-header">
           <span id="loaderStatusText">CALIBRATING AERO-STRETCH & CARBON PLATE...</span>
@@ -80,21 +65,31 @@
 
   <!-- TOP ANNOUNCEMENT BAR -->
   <div class="announcement-bar">
-    <span>⚡ FREE EXPRESS DISPATCH OVER ₹2,499 | USE CODE <strong>LOGIC10</strong> (10% OFF) OR <strong>FIRST15</strong> (15% OFF ABOVE ₹3,999)</span>
+    <span>⚡ FREE EXPRESS DISPATCH OVER ₹2,499 | CODE <strong>LOGIC10</strong> (10% OFF) OR <strong>FIRST15</strong> (15% OFF ABOVE ₹3,999)</span>
   </div>
 
-  <!-- HEADER (SINGLE-ROW ALIGNED - NO ADMIN ACCESS) -->
+  <!-- HEADER (SINGLE-ROW DESKTOP + HAMBURGER DRAWER ON MOBILE) -->
   <header class="site-header">
     <div class="header-inner">
-      <a href="#home" class="brand-logo" onclick="navigateTo('home')">
-        <img src="logic.png" alt="Logic Sports" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-        <div class="logo-fallback">
-          <span class="logo-main">LOGIC</span>
-          <span class="logo-sub">SPORTS</span>
-        </div>
-      </a>
+      <div class="header-left-group">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileNav(true)" aria-label="Open Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-      <nav class="main-nav">
+        <a href="#home" class="brand-logo" onclick="filterByCategory('ALL')">
+          <img src="logo.png" alt="Logic Sports" class="logo-img"
+            onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="logo-fallback">
+            <span class="logo-main">LOGIC</span>
+            <span class="logo-sub">SPORTS</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="main-nav" aria-label="Main Navigation">
         <button class="nav-link active" data-nav="ALL" onclick="filterByCategory('ALL')">Shop All</button>
         <button class="nav-link" data-nav="Tracksuits" onclick="filterByCategory('Tracksuits')">Tracksuits</button>
         <button class="nav-link" data-nav="Running Shoes" onclick="filterByCategory('Running Shoes')">Running Shoes</button>
@@ -104,7 +99,7 @@
       </nav>
 
       <div class="header-actions">
-        <div class="search-box">
+        <div class="search-box desktop-search">
           <input type="text" id="searchInput" placeholder="Search tracksuits, shoes, SKU..." oninput="handleSearch(this.value)" />
         </div>
 
@@ -114,7 +109,8 @@
         </button>
 
         <button class="action-btn" id="accountBtn" onclick="navigateTo('auth')">
-          <span id="accountBtnLabel">LOGIN / SIGN UP</span>
+          <span class="account-icon-mobile">👤</span>
+          <span id="accountBtnLabel" class="account-label-desktop">LOGIN / SIGN UP</span>
         </button>
 
         <button class="cart-trigger" onclick="toggleCartDrawer(true)">
@@ -124,6 +120,36 @@
       </div>
     </div>
   </header>
+
+  <!-- ==================== MOBILE NAVIGATION DRAWER ==================== -->
+  <div id="mobileNavOverlay" class="drawer-overlay hidden" onclick="toggleMobileNav(false)"></div>
+  <aside id="mobileNavDrawer" class="mobile-nav-drawer">
+    <div class="drawer-header">
+      <strong>LOGIC SPORTS MENU</strong>
+      <button class="close-btn" onclick="toggleMobileNav(false)">✕</button>
+    </div>
+    <div class="mobile-nav-body">
+      <div class="mobile-search-wrap">
+        <input type="text" id="mobileSearchInput" placeholder="Search tracksuits, shoes, SKU..." oninput="handleSearch(this.value)" />
+      </div>
+      <div class="mobile-nav-links">
+        <button class="mobile-nav-item active" data-nav="ALL" onclick="filterByCategory('ALL'); toggleMobileNav(false);">⚡ Shop All Gear</button>
+        <button class="mobile-nav-item" data-nav="Tracksuits" onclick="filterByCategory('Tracksuits'); toggleMobileNav(false);">🧥 Pro Tracksuits</button>
+        <button class="mobile-nav-item" data-nav="Running Shoes" onclick="filterByCategory('Running Shoes'); toggleMobileNav(false);">👟 Running Shoes</button>
+        <button class="mobile-nav-item" data-nav="Compression & Gear" onclick="filterByCategory('Compression & Gear'); toggleMobileNav(false);">⚡ Compression & Active Gear</button>
+        <button class="mobile-nav-item" data-nav="team" onclick="navigateTo('team'); toggleMobileNav(false);">🏆 Custom Team / Bulk Kits</button>
+        <button class="mobile-nav-item" data-nav="fit" onclick="scrollToSection('fit-calculator'); toggleMobileNav(false);">📏 Biomechanics Fit Lab</button>
+      </div>
+      <div class="mobile-nav-footer">
+        <button class="btn btn-dark btn-block" onclick="navigateTo('auth'); toggleMobileNav(false);">
+          👤 MY ATHLETE ACCOUNT / ORDERS
+        </button>
+        <button class="btn btn-outline-dark btn-block" style="margin-top:0.5rem;" onclick="toggleSizeModal(true); toggleMobileNav(false);">
+          📏 OFFICIAL SIZE CHART
+        </button>
+      </div>
+    </div>
+  </aside>
 
   <!-- ==================== VIEW 1: HOMEPAGE ==================== -->
   <main id="view-home" class="view-section active">
@@ -239,7 +265,7 @@
           <div class="tier-badges">
             <div class="tier-box"><strong>15 - 49 Kits</strong><span>18% Bulk Discount</span></div>
             <div class="tier-box"><strong>50 - 99 Kits</strong><span>25% Bulk Discount</span></div>
-            <div class="tier-box"><strong>100+ Kits</strong><span>32% + Free Custom Crest</span></div>
+            <div class="tier-box"><strong>100+ Kits</strong><span>32% + Free Crest</span></div>
           </div>
           <ul class="spec-list" style="margin-top:1.5rem;">
             <li>✓ Custom Pantone color matching & player name/number printing</li>
@@ -297,7 +323,6 @@
   <!-- ==================== VIEW 4: CUSTOMER LOGIN / SIGN UP / PROFILE ==================== -->
   <section id="view-auth" class="view-section">
     <div class="container auth-wrapper">
-      <!-- Guest Login / Signup -->
       <div id="guestAuthContainer" class="auth-card">
         <div class="auth-tabs">
           <button class="auth-tab active" id="tabLoginBtn" onclick="switchAuthTab('login')">CUSTOMER LOGIN</button>
@@ -343,7 +368,6 @@
         </form>
       </div>
 
-      <!-- Logged-In Athlete Dashboard -->
       <div id="customerProfileContainer" class="profile-dashboard hidden">
         <div class="profile-header-card">
           <div>
@@ -488,28 +512,32 @@
       </div>
       <div class="modal-body">
         <h4>Tracksuits & Tops (Chest / Waist in Inches)</h4>
-        <table class="data-table">
-          <thead><tr><th>Size</th><th>Chest (in)</th><th>Waist (in)</th><th>Inseam (in)</th></tr></thead>
-          <tbody>
-            <tr><td>S</td><td>36 - 38"</td><td>29 - 31"</td><td>30.5"</td></tr>
-            <tr><td>M</td><td>39 - 41"</td><td>32 - 34"</td><td>31.0"</td></tr>
-            <tr><td>L</td><td>42 - 44"</td><td>35 - 37"</td><td>31.5"</td></tr>
-            <tr><td>XL</td><td>45 - 47"</td><td>38 - 40"</td><td>32.0"</td></tr>
-            <tr><td>XXL</td><td>48 - 50"</td><td>41 - 43"</td><td>32.5"</td></tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead><tr><th>Size</th><th>Chest (in)</th><th>Waist (in)</th><th>Inseam (in)</th></tr></thead>
+            <tbody>
+              <tr><td>S</td><td>36 - 38"</td><td>29 - 31"</td><td>30.5"</td></tr>
+              <tr><td>M</td><td>39 - 41"</td><td>32 - 34"</td><td>31.0"</td></tr>
+              <tr><td>L</td><td>42 - 44"</td><td>35 - 37"</td><td>31.5"</td></tr>
+              <tr><td>XL</td><td>45 - 47"</td><td>38 - 40"</td><td>32.0"</td></tr>
+              <tr><td>XXL</td><td>48 - 50"</td><td>41 - 43"</td><td>32.5"</td></tr>
+            </tbody>
+          </table>
+        </div>
         <h4 style="margin-top:1.25rem;">Running Footwear (UK to CM / EU)</h4>
-        <table class="data-table">
-          <thead><tr><th>UK Size</th><th>US Size</th><th>EU Size</th><th>Foot Length (cm)</th></tr></thead>
-          <tbody>
-            <tr><td>UK 6</td><td>7</td><td>40</td><td>25.0 cm</td></tr>
-            <tr><td>UK 7</td><td>8</td><td>41</td><td>25.8 cm</td></tr>
-            <tr><td>UK 8</td><td>9</td><td>42.5</td><td>26.7 cm</td></tr>
-            <tr><td>UK 9</td><td>10</td><td>44</td><td>27.5 cm</td></tr>
-            <tr><td>UK 10</td><td>11</td><td>45</td><td>28.4 cm</td></tr>
-            <tr><td>UK 11</td><td>12</td><td>46</td><td>29.2 cm</td></tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead><tr><th>UK Size</th><th>US Size</th><th>EU Size</th><th>Foot Length (cm)</th></tr></thead>
+            <tbody>
+              <tr><td>UK 6</td><td>7</td><td>40</td><td>25.0 cm</td></tr>
+              <tr><td>UK 7</td><td>8</td><td>41</td><td>25.8 cm</td></tr>
+              <tr><td>UK 8</td><td>9</td><td>42.5</td><td>26.7 cm</td></tr>
+              <tr><td>UK 9</td><td>10</td><td>44</td><td>27.5 cm</td></tr>
+              <tr><td>UK 10</td><td>11</td><td>45</td><td>28.4 cm</td></tr>
+              <tr><td>UK 11</td><td>12</td><td>46</td><td>29.2 cm</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -534,7 +562,7 @@
 
   <!-- FLOATING WHATSAPP SUPPORT WIDGET -->
   <a href="https://wa.me/919876543210?text=Hi%20Logic%20Sports%20Support%2C%20I%20need%20help%20with%20sizing%20or%20an%20order." target="_blank" class="whatsapp-float" title="Chat with Athlete Support">
-    💬 Athlete Support
+    💬 <span class="wa-label">Athlete Support</span>
   </a>
 
   <!-- FOOTER (CUSTOMER LINKS ONLY) -->
