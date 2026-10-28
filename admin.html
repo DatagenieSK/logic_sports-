@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LOGIC SPORTS | Staff ERP, Size Matrix & Dispatch Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="admin" class="admin-body">
+
+  <!-- STAFF GATEWAY LOGIN SCREEN -->
+  <section id="adminLoginGate" class="admin-gate-wrapper">
+    <div class="auth-card admin-auth-card">
+      <span class="eyebrow-tag">RESTRICTED INTERNAL PORTAL</span>
+      <h2>LOGIC SPORTS ADMIN ERP</h2>
+      <p class="muted-text">Authorized warehouse, merchandising & dispatch personnel only.</p>
+      <form onsubmit="handleAdminLogin(event)" class="auth-form">
+        <div class="input-group">
+          <label>Admin ID / Email</label>
+          <input type="email" id="adminEmail" required value="admin@logicsports.in" />
+        </div>
+        <div class="input-group">
+          <label>Security Passkey</label>
+          <input type="password" id="adminPass" required value="logic2026" />
+        </div>
+        <div id="adminLoginError" class="form-error hidden"></div>
+        <button type="submit" class="btn btn-primary btn-block">UNLOCK ADMIN WORKSPACE</button>
+        <p class="demo-hint">Credentials: <code>admin@logicsports.in</code> / <code>logic2026</code></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- MAIN ADMIN WORKSPACE -->
+  <div id="adminWorkspace" class="admin-workspace hidden">
+    <header class="admin-header">
+      <div class="container admin-header-inner">
+        <div class="admin-brand">
+          <strong>LOGIC SPORTS</strong>
+          <span class="admin-badge">OPERATIONS, SIZE MATRIX & DISPATCH</span>
+        </div>
+        <div class="admin-header-actions">
+          <button class="btn btn-outline-light btn-sm" onclick="exportInventoryCSV()">⬇ EXPORT INVENTORY CSV</button>
+          <button class="btn btn-outline-light btn-sm" onclick="exportOrdersCSV()">⬇ EXPORT ORDERS CSV</button>
+          <a href="index.html" target="_blank" class="btn btn-primary btn-sm">VIEW STOREFRONT ↗</a>
+          <button class="btn btn-danger btn-sm" onclick="handleAdminLogout()">LOCK CONSOLE</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container admin-main">
+      <!-- KPI METRICS ROW -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <span>TOTAL CATALOG SKUS</span>
+          <strong id="kpiTotalSkus">0</strong>
+        </div>
+        <div class="kpi-card">
+          <span>TOTAL MATRIX UNITS</span>
+          <strong id="kpiTotalUnits">0</strong>
+        </div>
+        <div class="kpi-card">
+          <span>LOW STOCK ALERTS (&lt;5)</span>
+          <strong id="kpiLowStock" style="color:var(--danger);">0</strong>
+        </div>
+        <div class="kpi-card">
+          <span>B2B TEAM INQUIRIES</span>
+          <strong id="kpiBulkQuotes">0</strong>
+        </div>
+        <div class="kpi-card">
+          <span>GROSS ORDER REVENUE</span>
+          <strong id="kpiTotalRevenue">₹0</strong>
+        </div>
+      </div>
+
+      <div class="admin-layout-grid">
+        <!-- LEFT COLUMN: PRODUCT + PER-SIZE STOCK MATRIX + COUPON ENGINE -->
+        <div>
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3 id="formModeTitle">ADD / EDIT PRODUCT & SIZE MATRIX</h3>
+              <button type="button" class="btn btn-outline-dark btn-sm" onclick="resetAdminProductForm()">CLEAR / NEW</button>
+            </div>
+
+            <form id="adminProductForm" onsubmit="saveAdminProduct(event)">
+              <input type="hidden" id="editProductId" value="" />
+
+              <div class="input-group">
+                <label>Product Title *</label>
+                <input type="text" id="prodName" required placeholder="e.g. Logic Aero-Pro Tracksuit Set" />
+              </div>
+
+              <div class="form-row-3">
+                <div class="input-group">
+                  <label>SKU Code *</label>
+                  <input type="text" id="prodSku" required placeholder="LGC-TRK-009" />
+                </div>
+                <div class="input-group">
+                  <label>Category *</label>
+                  <select id="prodCategory" onchange="loadCategoryDefaultSizes()">
+                    <option value="Tracksuits">Tracksuits</option>
+                    <option value="Running Shoes">Running Shoes</option>
+                    <option value="Compression & Gear">Compression & Gear</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label>Badge Tag</label>
+                  <input type="text" id="prodBadge" placeholder="CARBON PLATE" />
+                </div>
+              </div>
+
+              <div class="form-row-2">
+                <div class="input-group">
+                  <label>Selling Price (₹) *</label>
+                  <input type="number" id="prodPrice" required min="99" placeholder="2899" />
+                </div>
+                <div class="input-group">
+                  <label>MRP Price (₹) *</label>
+                  <input type="number" id="prodMrp" required min="99" placeholder="4299" />
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label>Model Reference / Fit Note</label>
+                <input type="text" id="prodModelSpec" placeholder="Model is 5'10&quot; (74kg) wearing Size L | Athletic Tapered Cut" />
+              </div>
+
+              <div class="input-group">
+                <label>Technical Description & Fabric/Sole Specs *</label>
+                <textarea id="prodDesc" rows="2" required placeholder="4-way stretch ripstop jacket and tapered ankle-zip track pants..."></textarea>
+              </div>
+
+              <!-- 1. SIZE SELECTION + PER-SIZE STOCK MATRIX -->
+              <div class="variant-builder-box">
+                <label class="builder-title">1. ACTIVE SIZES & PER-SIZE STOCK QUANTITY MATRIX</label>
+                <div id="sizePillsContainer" class="size-pills-wrap"></div>
+                <div class="custom-size-row" style="margin-bottom:0.85rem;">
+                  <input type="text" id="customSizeInput" placeholder="Add custom size (e.g. 3XL, UK 12, Kids L)" />
+                  <button type="button" class="btn btn-dark btn-sm" onclick="addCustomSizePill()">+ ADD SIZE</button>
+                </div>
+                <div id="sizeStockMatrixGrid" class="size-stock-matrix-grid"></div>
+              </div>
+
+              <!-- 2. COLORWAY & MULTI-ANGLE GALLERY BUILDER -->
+              <div class="variant-builder-box">
+                <div class="builder-header-row">
+                  <label class="builder-title">2. COLOR VARIANTS & MULTI-ANGLE IMAGES (COMMA-SEPARATED URLS)</label>
+                  <button type="button" class="btn btn-dark btn-sm" onclick="addColorVariantRow()">+ ADD COLOR</button>
+                </div>
+                <div id="colorVariantsList" class="color-variants-list"></div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block">SAVE PRODUCT & MATRIX TO STOREFRONT</button>
+            </form>
+          </div>
+
+          <!-- COUPON & PROMO CODE ENGINE -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3>PROMO CODE & CAMPAIGN MANAGER</h3>
+            </div>
+            <form class="form-row-3" onsubmit="saveAdminCoupon(event)" style="align-items:end;margin-bottom:1rem;">
+              <div class="input-group" style="margin:0;">
+                <label>Code</label>
+                <input type="text" id="cpnCode" required placeholder="SPRINT20" />
+              </div>
+              <div class="input-group" style="margin:0;">
+                <label>Discount %</label>
+                <input type="number" id="cpnPct" required min="5" max="75" placeholder="20" />
+              </div>
+              <div class="input-group" style="margin:0;">
+                <label>Min Order (₹)</label>
+                <input type="number" id="cpnMin" required min="0" value="1999" />
+              </div>
+              <button type="submit" class="btn btn-dark btn-sm" style="height:40px;">+ ADD CODE</button>
+            </form>
+            <div id="adminCouponsList"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: INVENTORY TABLE, ORDERS + PACKING SLIP, B2B LEADS -->
+        <div class="admin-right-stack">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3>LIVE CATALOG & SIZE MATRIX INVENTORY</h3>
+              <button class="btn btn-outline-dark btn-sm" onclick="resetDemoDatabase()">RESET DEMO DATA</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>SKU / Product</th>
+                    <th>Price</th>
+                    <th>Per-Size Stock Breakdown</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminInventoryTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <h3>CUSTOMER ORDERS, EXCHANGES & THERMAL PACKING SLIPS</h3>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Order / Date</th>
+                    <th>Customer</th>
+                    <th>Items & Exchange Info</th>
+                    <th>Total</th>
+                    <th>Dispatch Status & Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminOrdersTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <h3>B2B CUSTOM TEAM / CLUB INQUIRIES & RESTOCK ALERTS</h3>
+            <div id="adminB2BAndAlertsBox"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toastBox" class="toast-box"></div>
+  <script src="script.js"></script>
+</body>
+</html>

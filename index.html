@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LOGIC SPORTS | Pro Tracksuits, Carbon Footwear & Custom Team Kits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="store">
+    <!-- ==================== LOGIC SPORTS VELOCITY LOADER ==================== -->
+  <div id="logicLoader" class="logic-loader">
+    <!-- Top & Bottom Split Shutters -->
+    <div class="loader-shutter shutter-top"></div>
+    <div class="loader-shutter shutter-bottom"></div>
+
+    <div class="loader-core">
+      <!-- Speed Streak Lines (Matching Logo Motion Lines) -->
+      <div class="speed-streaks">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <!-- Custom Animated SVG Sprinter + Velocity Dart -->
+      <div class="sprinter-stage">
+        <svg class="sprinter-svg" viewBox="0 0 260 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Streaking Motion Lines Behind Runner -->
+          <line class="svg-streak s-1" x1="15" y1="42" x2="95" y2="30" stroke="#F3C13A" stroke-width="5" stroke-linecap="round"/>
+          <line class="svg-streak s-2" x1="5" y1="68" x2="72" y2="58" stroke="#F3C13A" stroke-width="4.5" stroke-linecap="round"/>
+          <line class="svg-streak s-3" x1="18" y1="94" x2="65" y2="87" stroke="#F3C13A" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- Paper-Plane Velocity Dart Ahead of Runner -->
+          <polygon class="velocity-dart" points="195,28 242,18 210,48 206,36" fill="#F3C13A" />
+
+          <!-- Sprinter Silhouette / Kinetic Vector -->
+          <g class="runner-body">
+            <!-- Head & Visor -->
+            <circle cx="156" cy="36" r="13" fill="#F3C13A" />
+            <path d="M154 33 L169 33" stroke="#0E1726" stroke-width="3.5" stroke-linecap="round"/>
+            <!-- Torso -->
+            <path d="M146 50 L118 96 L142 104 L162 56 Z" fill="#F3C13A" />
+            <!-- Front Pumping Arm -->
+            <path class="arm-front" d="M156 56 L182 74 L202 50" stroke="#F3C13A" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Back Drive Arm -->
+            <path class="arm-back" d="M144 54 L112 62 L94 88" stroke="#F3C13A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Front Knee Drive Leg -->
+            <path class="leg-front" d="M136 98 L168 122 L152 158" stroke="#F3C13A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Back Extension Push-Off Leg -->
+            <path class="leg-back" d="M124 96 L88 134 L52 172" stroke="#F3C13A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Brand Typography Lockup -->
+      <div class="loader-brand-lockup">
+        <span class="loader-word-logic">LOGIC</span>
+        <span class="loader-word-sports">SPORTS</span>
+      </div>
+
+      <!-- Telemetry Progress Track & Live Counter -->
+      <div class="loader-telemetry">
+        <div class="telemetry-header">
+          <span id="loaderStatusText">CALIBRATING AERO-STRETCH & CARBON PLATE...</span>
+          <strong id="loaderPct">0%</strong>
+        </div>
+        <div class="telemetry-track">
+          <div id="loaderBarFill" class="telemetry-fill"></div>
+        </div>
+        <div class="telemetry-meta">
+          <span>CADENCE: <strong id="loaderCadence">185 SPM</strong></span>
+          <span>PACE: <strong id="loaderSpeed">0.0 KM/H</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="announcement-bar">
+    <span>⚡ FREE EXPRESS DISPATCH OVER ₹2,499 | USE CODE <strong>LOGIC10</strong> (10% OFF) OR <strong>FIRST15</strong> (15% OFF ABOVE ₹3,999)</span>
+  </div>
+
+  <!-- HEADER (SINGLE-ROW ALIGNED - NO ADMIN ACCESS) -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#home" class="brand-logo" onclick="navigateTo('home')">
+        <img src="logic.png" alt="Logic Sports" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="logo-fallback">
+          <span class="logo-main">LOGIC</span>
+          <span class="logo-sub">SPORTS</span>
+        </div>
+      </a>
+
+      <nav class="main-nav">
+        <button class="nav-link active" data-nav="ALL" onclick="filterByCategory('ALL')">Shop All</button>
+        <button class="nav-link" data-nav="Tracksuits" onclick="filterByCategory('Tracksuits')">Tracksuits</button>
+        <button class="nav-link" data-nav="Running Shoes" onclick="filterByCategory('Running Shoes')">Running Shoes</button>
+        <button class="nav-link" data-nav="Compression & Gear" onclick="filterByCategory('Compression & Gear')">Active Gear</button>
+        <button class="nav-link" data-nav="team" onclick="navigateTo('team')">Team Kits</button>
+        <button class="nav-link" data-nav="fit" onclick="scrollToSection('fit-calculator')">Fit Lab</button>
+      </nav>
+
+      <div class="header-actions">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Search tracksuits, shoes, SKU..." oninput="handleSearch(this.value)" />
+        </div>
+
+        <button class="icon-btn" onclick="toggleWishlistDrawer(true)" title="Saved Wishlist">
+          <span>♥</span>
+          <span class="badge-pill" id="wishlistCount">0</span>
+        </button>
+
+        <button class="action-btn" id="accountBtn" onclick="navigateTo('auth')">
+          <span id="accountBtnLabel">LOGIN / SIGN UP</span>
+        </button>
+
+        <button class="cart-trigger" onclick="toggleCartDrawer(true)">
+          <span>BAG</span>
+          <span class="cart-badge" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== VIEW 1: HOMEPAGE ==================== -->
+  <main id="view-home" class="view-section active">
+    <section class="hero-banner">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <span class="eyebrow-tag">2026 PRO VELOCITY SERIES</span>
+          <h1>ENGINEERED FOR RELENTLESS SPEED.</h1>
+          <p>Precision-tailored 4-way stretch ripstop tracksuits and supercritical carbon-plate road shoes built for sprinters, marathoners, and high-output training.</p>
+          <div class="hero-cta-group">
+            <button class="btn btn-primary" onclick="filterByCategory('Tracksuits')">SHOP TRACKSUITS</button>
+            <button class="btn btn-outline-light" onclick="filterByCategory('Running Shoes')">EXPLORE RUNNING SHOES</button>
+          </div>
+          <div class="hero-metrics">
+            <div><strong>215g</strong><span>Featherweight Carbon Shoe</span></div>
+            <div><strong>4-Way</strong><span>Aero-Stretch Ripstop</span></div>
+            <div><strong>7-Day</strong><span>Instant Size Exchange</span></div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-card-spotlight" onclick="openProductDetail('p-sho-01', 0)">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1000&q=85" alt="Logic Velocity Nitro Shoe" />
+            <div class="hero-floating-badge">
+              <span>FEATURED CARBON RACER</span>
+              <strong>LOGIC NITRO CARBON-X — ₹4,499</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTER & CATALOG SECTION -->
+    <section class="catalog-section container" id="catalogSection">
+      <div class="catalog-header">
+        <div>
+          <span class="section-kicker">HIGH-PERFORMANCE APPAREL & FOOTWEAR</span>
+          <h2 id="catalogTitle">ALL PERFORMANCE GEAR</h2>
+        </div>
+        <div class="catalog-controls">
+          <label class="stock-Check-label">
+            <input type="checkbox" id="inStockOnly" onchange="renderStoreCatalog()" /> In-Stock Only
+          </label>
+          <select id="sortSelect" onchange="renderStoreCatalog()">
+            <option value="featured">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="productGrid" class="product-grid"></div>
+    </section>
+
+    <!-- BIOMECHANICS FIT CALCULATOR -->
+    <section class="fit-section" id="fit-calculator">
+      <div class="container fit-grid">
+        <div>
+          <span class="eyebrow-tag">ATHLETE SIZING LAB</span>
+          <h2>FIND YOUR EXACT LOGIC FIT</h2>
+          <p>Unsure between sizes on our tapered tracksuits? Enter your height and weight for our athletic cut recommendation.</p>
+          <div class="fit-form">
+            <div class="input-group">
+              <label>Height (cm)</label>
+              <input type="number" id="fitHeight" placeholder="e.g. 176" min="140" max="215" />
+            </div>
+            <div class="input-group">
+              <label>Weight (kg)</label>
+              <input type="number" id="fitWeight" placeholder="e.g. 72" min="40" max="150" />
+            </div>
+            <div class="input-group">
+              <label>Fit Preference</label>
+              <select id="fitPref">
+                <option value="athletic">Athletic Tapered (Standard)</option>
+                <option value="compression">Snug Sprint Fit</option>
+                <option value="relaxed">Relaxed Warmup Fit</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="calculateTracksuitFit()">CALCULATE SIZE</button>
+          </div>
+          <div id="fitResultBox" class="fit-result hidden"></div>
+        </div>
+
+        <div class="value-props-card">
+          <h3>LOGIC PERFORMANCE GUARANTEE</h3>
+          <ul class="spec-list">
+            <li><strong>Laser-Perforated Vent Zones:</strong> Core temperature regulation during high-output intervals.</li>
+            <li><strong>Ankle Zippers on Track Pants:</strong> Quick on/off over running shoes without removing footwear.</li>
+            <li><strong>Dual-Density Midsole Foam:</strong> 78% energy return tested across 500km road impact cycles.</li>
+            <li><strong>7-Day Free Size Exchange:</strong> Instant size swap from your Athlete Account dashboard.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== VIEW 2: DEDICATED PRODUCT DETAIL PAGE (PDP) ==================== -->
+  <section id="view-pdp" class="view-section">
+    <div class="container pdp-wrapper">
+      <button class="back-btn" onclick="navigateTo('home')">← BACK TO CATALOG</button>
+      <div id="pdpContent"></div>
+    </div>
+  </section>
+
+  <!-- ==================== VIEW 3: CUSTOM TEAM / BULK ORDERS ==================== -->
+  <section id="view-team" class="view-section">
+    <div class="container team-wrapper">
+      <div class="team-grid">
+        <div class="team-info-card">
+          <span class="eyebrow-tag">LOGIC CUSTOM LAB (B2B & CLUBS)</span>
+          <h2>CUSTOM TEAM TRACKSUITS & RUNNING CLUB KITS</h2>
+          <p>Outfitting an athletics academy, marathon club, university squad, or corporate tournament? Get custom-sublimated tracksuits, laser-printed club crests, and bulk tier discounts.</p>
+          <div class="tier-badges">
+            <div class="tier-box"><strong>15 - 49 Kits</strong><span>18% Bulk Discount</span></div>
+            <div class="tier-box"><strong>50 - 99 Kits</strong><span>25% Bulk Discount</span></div>
+            <div class="tier-box"><strong>100+ Kits</strong><span>32% + Free Custom Crest</span></div>
+          </div>
+          <ul class="spec-list" style="margin-top:1.5rem;">
+            <li>✓ Custom Pantone color matching & player name/number printing</li>
+            <li>✓ Dedicated account manager & size sample kit dispatch</li>
+            <li>✓ GST Input Tax Credit (B2B Invoice) included on all bulk orders</li>
+          </ul>
+        </div>
+
+        <form class="auth-card" onsubmit="submitBulkTeamInquiry(event)">
+          <h3>REQUEST TEAM QUOTE & SAMPLE KIT</h3>
+          <div class="form-row-2">
+            <div class="input-group">
+              <label>Club / Organization Name *</label>
+              <input type="text" id="bulkOrg" required placeholder="e.g. Salt Lake Runners Club" />
+            </div>
+            <div class="input-group">
+              <label>Contact Person *</label>
+              <input type="text" id="bulkContact" required placeholder="Full Name" />
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="input-group">
+              <label>Official Email *</label>
+              <input type="email" id="bulkEmail" required placeholder="coach@club.in" />
+            </div>
+            <div class="input-group">
+              <label>WhatsApp / Phone *</label>
+              <input type="tel" id="bulkPhone" required placeholder="+91 98765 43210" />
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="input-group">
+              <label>Gear Category *</label>
+              <select id="bulkCategory">
+                <option value="Custom Tracksuits (Jacket + Pant)">Custom Tracksuits (Jacket + Pant)</option>
+                <option value="Running Shoes + Team Tracksuits">Running Shoes + Team Tracksuits</option>
+                <option value="Compression & Marathon Jerseys">Compression & Marathon Jerseys</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Estimated Quantity (MOQ 15) *</label>
+              <input type="number" id="bulkQty" min="15" value="25" required />
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Customization Notes (Colors, Crest Placement, Target Date)</label>
+            <textarea id="bulkNotes" rows="3" placeholder="Tell us your team colors, logo printing requirements, and event date..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">SUBMIT BULK QUOTE REQUEST</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== VIEW 4: CUSTOMER LOGIN / SIGN UP / PROFILE ==================== -->
+  <section id="view-auth" class="view-section">
+    <div class="container auth-wrapper">
+      <!-- Guest Login / Signup -->
+      <div id="guestAuthContainer" class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabLoginBtn" onclick="switchAuthTab('login')">CUSTOMER LOGIN</button>
+          <button class="auth-tab" id="tabSignupBtn" onclick="switchAuthTab('signup')">CREATE ACCOUNT</button>
+        </div>
+
+        <form id="loginForm" class="auth-form" onsubmit="handleCustomerLogin(event)">
+          <h2>WELCOME BACK, ATHLETE</h2>
+          <p class="muted-text">Sign in to track live shipments, download GST invoices, or request a size exchange.</p>
+          <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" required placeholder="athlete@example.com" />
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••" />
+          </div>
+          <div id="loginError" class="form-error hidden"></div>
+          <button type="submit" class="btn btn-primary btn-block">SIGN IN TO ACCOUNT</button>
+        </form>
+
+        <form id="signupForm" class="auth-form hidden" onsubmit="handleCustomerSignup(event)">
+          <h2>JOIN THE LOGIC CLUB</h2>
+          <p class="muted-text">Create your account for instant order tracking, wishlist sync, and member-only drops.</p>
+          <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="signupName" required placeholder="Arjun Sen" />
+          </div>
+          <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" id="signupEmail" required placeholder="arjun@example.com" />
+          </div>
+          <div class="input-group">
+            <label>Phone Number</label>
+            <input type="tel" id="signupPhone" required placeholder="+91 98765 43210" />
+          </div>
+          <div class="input-group">
+            <label>Create Password (min 6 chars)</label>
+            <input type="password" id="signupPassword" required minlength="6" placeholder="••••••••" />
+          </div>
+          <div id="signupError" class="form-error hidden"></div>
+          <button type="submit" class="btn btn-primary btn-block">CREATE ATHLETE ACCOUNT</button>
+        </form>
+      </div>
+
+      <!-- Logged-In Athlete Dashboard -->
+      <div id="customerProfileContainer" class="profile-dashboard hidden">
+        <div class="profile-header-card">
+          <div>
+            <span class="eyebrow-tag">VERIFIED LOGIC ATHLETE</span>
+            <h2 id="profileUserName">Athlete Name</h2>
+            <p id="profileUserEmail" class="muted-text"></p>
+          </div>
+          <div class="profile-actions">
+            <button class="btn btn-outline-dark" onclick="navigateTo('home')">CONTINUE SHOPPING</button>
+            <button class="btn btn-danger" onclick="handleCustomerLogout()">LOGOUT</button>
+          </div>
+        </div>
+
+        <div class="orders-history-card">
+          <h3>MY ORDERS, LIVE TRACKING & SIZE EXCHANGE</h3>
+          <div id="customerOrdersList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== WISHLIST DRAWER ==================== -->
+  <div id="wishlistOverlay" class="drawer-overlay hidden" onclick="toggleWishlistDrawer(false)"></div>
+  <aside id="wishlistDrawer" class="cart-drawer">
+    <div class="drawer-header">
+      <h3>SAVED WISHLIST</h3>
+      <button class="close-btn" onclick="toggleWishlistDrawer(false)">✕</button>
+    </div>
+    <div id="wishlistItemsContainer" class="drawer-body"></div>
+  </aside>
+
+  <!-- ==================== SHOPPING CART DRAWER ==================== -->
+  <div id="cartOverlay" class="drawer-overlay hidden" onclick="toggleCartDrawer(false)"></div>
+  <aside id="cartDrawer" class="cart-drawer">
+    <div class="drawer-header">
+      <h3>YOUR GEAR BAG</h3>
+      <button class="close-btn" onclick="toggleCartDrawer(false)">✕</button>
+    </div>
+    <div id="cartItemsContainer" class="drawer-body"></div>
+    <div class="drawer-footer">
+      <div class="promo-row">
+        <input type="text" id="promoInput" placeholder="Promo Code (LOGIC10 / FIRST15)" />
+        <button class="btn btn-dark" onclick="applyPromoCode()">APPLY</button>
+      </div>
+      <div class="cart-summary-lines">
+        <div class="summary-line"><span>Subtotal</span><strong id="cartSubtotal">₹0</strong></div>
+        <div class="summary-line"><span>Discount <small id="activeCouponTag"></small></span><strong id="cartDiscount">-₹0</strong></div>
+        <div class="summary-line total"><span>Total (Incl. GST)</span><strong id="cartTotal">₹0</strong></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="openCheckoutModal()">PROCEED TO CHECKOUT</button>
+    </div>
+  </aside>
+
+  <!-- ==================== CHECKOUT MODAL ==================== -->
+  <div id="checkoutModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>EXPRESS DISPATCH CHECKOUT</h3>
+        <button class="close-btn" onclick="closeCheckoutModal()">✕</button>
+      </div>
+      <form id="checkoutForm" onsubmit="submitCustomerOrder(event)">
+        <div class="form-row-2">
+          <div class="input-group">
+            <label>Full Name *</label>
+            <input type="text" id="chkName" required />
+          </div>
+          <div class="input-group">
+            <label>Phone Number *</label>
+            <input type="tel" id="chkPhone" required />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Email Address *</label>
+          <input type="email" id="chkEmail" required />
+        </div>
+        <div class="input-group">
+          <label>Delivery Street Address *</label>
+          <input type="text" id="chkAddress" required placeholder="House/Flat No, Street, Landmark" />
+        </div>
+        <div class="form-row-2">
+          <div class="input-group">
+            <label>City *</label>
+            <input type="text" id="chkCity" required placeholder="Kolkata" />
+          </div>
+          <div class="input-group">
+            <label>PIN Code *</label>
+            <input type="text" id="chkPin" required pattern="[0-9]{6}" placeholder="700091" />
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="input-group">
+            <label>Payment Method *</label>
+            <select id="chkPayment">
+              <option value="UPI / QR Instant Pay">UPI / QR Instant Pay</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+              <option value="Cash on Delivery (COD)">Cash on Delivery (COD)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Company GSTIN (Optional)</label>
+            <input type="text" id="chkGstin" placeholder="For B2B Tax Credit" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">CONFIRM & PLACE ORDER</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== SIZE EXCHANGE MODAL ==================== -->
+  <div id="exchangeModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>7-DAY INSTANT SIZE EXCHANGE</h3>
+        <button class="close-btn" onclick="closeExchangeModal()">✕</button>
+      </div>
+      <form onsubmit="submitSizeExchange(event)">
+        <input type="hidden" id="exOrderId" />
+        <p class="muted-text" style="margin-bottom:1rem;">Select the new size you need and reason for exchange. Our courier will pick up the original item and hand over the replacement simultaneously.</p>
+        <div class="input-group">
+          <label>Replacement Size Needed *</label>
+          <input type="text" id="exNewSize" required placeholder="e.g. Size L or UK 9" />
+        </div>
+        <div class="input-group">
+          <label>Fit Feedback *</label>
+          <select id="exReason">
+            <option value="Too Tight / Need Larger Size">Too Tight / Need Larger Size</option>
+            <option value="Too Loose / Need Smaller Size">Too Loose / Need Smaller Size</option>
+            <option value="Colorway Swap Request">Colorway Swap Request</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">BOOK FREE EXCHANGE PICKUP</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== SIZE GUIDE MODAL ==================== -->
+  <div id="sizeGuideModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>LOGIC SPORTS OFFICIAL SIZE CHART</h3>
+        <button class="close-btn" onclick="toggleSizeModal(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <h4>Tracksuits & Tops (Chest / Waist in Inches)</h4>
+        <table class="data-table">
+          <thead><tr><th>Size</th><th>Chest (in)</th><th>Waist (in)</th><th>Inseam (in)</th></tr></thead>
+          <tbody>
+            <tr><td>S</td><td>36 - 38"</td><td>29 - 31"</td><td>30.5"</td></tr>
+            <tr><td>M</td><td>39 - 41"</td><td>32 - 34"</td><td>31.0"</td></tr>
+            <tr><td>L</td><td>42 - 44"</td><td>35 - 37"</td><td>31.5"</td></tr>
+            <tr><td>XL</td><td>45 - 47"</td><td>38 - 40"</td><td>32.0"</td></tr>
+            <tr><td>XXL</td><td>48 - 50"</td><td>41 - 43"</td><td>32.5"</td></tr>
+          </tbody>
+        </table>
+        <h4 style="margin-top:1.25rem;">Running Footwear (UK to CM / EU)</h4>
+        <table class="data-table">
+          <thead><tr><th>UK Size</th><th>US Size</th><th>EU Size</th><th>Foot Length (cm)</th></tr></thead>
+          <tbody>
+            <tr><td>UK 6</td><td>7</td><td>40</td><td>25.0 cm</td></tr>
+            <tr><td>UK 7</td><td>8</td><td>41</td><td>25.8 cm</td></tr>
+            <tr><td>UK 8</td><td>9</td><td>42.5</td><td>26.7 cm</td></tr>
+            <tr><td>UK 9</td><td>10</td><td>44</td><td>27.5 cm</td></tr>
+            <tr><td>UK 10</td><td>11</td><td>45</td><td>28.4 cm</td></tr>
+            <tr><td>UK 11</td><td>12</td><td>46</td><td>29.2 cm</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== POLICY & FAQ MODAL ==================== -->
+  <div id="policyModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="policyModalTitle">SHIPPING, EXCHANGE & CARE POLICIES</h3>
+        <button class="close-btn" onclick="togglePolicyModal(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <h4>1. 7-Day Free Size Exchange & Returns</h4>
+        <p class="muted-text" style="margin-bottom:0.85rem;">Unworn tracksuits and indoor-tested running shoes with original tags can be exchanged for another size within 7 days of delivery at zero cost.</p>
+        <h4>2. Express Dispatch & Cash on Delivery</h4>
+        <p class="muted-text" style="margin-bottom:0.85rem;">Orders placed before 2:00 PM IST ship the same business day via BlueDart / Delhivery Air. Prepaid orders above ₹2,499 qualify for free shipping.</p>
+        <h4>3. Ripstop Tracksuit & Carbon Shoe Care</h4>
+        <p class="muted-text">Cold machine wash tracksuits inside-out; do not iron directly on reflective velocity piping. Clean carbon-plate shoes with a soft damp brush; never machine wash.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING WHATSAPP SUPPORT WIDGET -->
+  <a href="https://wa.me/919876543210?text=Hi%20Logic%20Sports%20Support%2C%20I%20need%20help%20with%20sizing%20or%20an%20order." target="_blank" class="whatsapp-float" title="Chat with Athlete Support">
+    💬 Athlete Support
+  </a>
+
+  <!-- FOOTER (CUSTOMER LINKS ONLY) -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="footer-brand">LOGIC SPORTS</div>
+        <p class="muted-text">High-velocity athletic tracksuits, marathon footwear, and custom club kits engineered for relentless pace.</p>
+      </div>
+      <div>
+        <h4>SHOP GEAR</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="filterByCategory('Tracksuits')">Pro Tracksuits</a></li>
+          <li><a href="javascript:void(0)" onclick="filterByCategory('Running Shoes')">Carbon & Road Shoes</a></li>
+          <li><a href="javascript:void(0)" onclick="filterByCategory('Compression & Gear')">Compression Apparel</a></li>
+          <li><a href="javascript:void(0)" onclick="navigateTo('team')">Custom Team / Bulk Kits</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>ATHLETE SUPPORT & LEGAL</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="toggleSizeModal(true)">Official Size & Fit Chart</a></li>
+          <li><a href="javascript:void(0)" onclick="navigateTo('auth')">Track Order / Size Exchange</a></li>
+          <li><a href="javascript:void(0)" onclick="togglePolicyModal(true)">7-Day Return & Shipping Policy</a></li>
+          <li><a href="javascript:void(0)" onclick="togglePolicyModal(true)">Wash Care & Shoe Warranty</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 LOGIC SPORTS PERFORMANCE PVT. LTD. ALL RIGHTS RESERVED.</span>
+    </div>
+  </footer>
+
+  <div id="toastBox" class="toast-box"></div>
+  <script src="script.js"></script>
+</body>
+</html>
